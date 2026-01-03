@@ -33,14 +33,8 @@ async function CarsList({ filters }: { filters: Filters }) {
     )
   }
 
-  // Serialize non-plain objects for client components
-  const serializedCars = cars.map(car => ({
-    ...car,
-    price: car.price.toString(),
-    createdAt: car.createdAt.toISOString(),
-    updatedAt: car.updatedAt.toISOString(),
-    inspectionDate: car.inspectionDate ? car.inspectionDate.toISOString() : null
-  }))
+  // Cars are already in the correct format from getFilteredCars
+  const serializedCars = cars
 
   return (
     <>

@@ -8,14 +8,8 @@ import { CheckCircle, Shield, Truck, ArrowRight } from 'lucide-react'
 export default async function HomePage() {
   const featuredCars = await getFeaturedCars(8)
 
-  // Serialize non-plain objects for client components
-  const serializedCars = featuredCars.map(car => ({
-    ...car,
-    price: car.price.toString(),
-    createdAt: car.createdAt.toISOString(),
-    updatedAt: car.updatedAt.toISOString(),
-    inspectionDate: car.inspectionDate ? car.inspectionDate.toISOString() : null
-  }))
+  // Cars are already in the correct format from getFeaturedCars
+  const serializedCars = featuredCars
 
   return (
     <div className="flex flex-col">

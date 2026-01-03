@@ -47,7 +47,7 @@ export default function FavoriteButton({
 
       if (result.success) {
         setIsFavorited(result.isFavorited)
-        toast.success(result.message || (result.isFavorited ? 'Added to favorites' : 'Removed from favorites'))
+        toast.success('message' in result && result.message ? result.message : (result.isFavorited ? 'Added to favorites' : 'Removed from favorites'))
         router.refresh()
       } else {
         // If not logged in, redirect to sign in

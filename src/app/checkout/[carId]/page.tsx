@@ -103,7 +103,6 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
         state: formData.state!,
         postcode: formData.postcode!,
         deliveryDate: formData.deliveryDate!,
-        deliveryNotes: formData.deliveryNotes,
         paymentMethod: 'card',
       })
 

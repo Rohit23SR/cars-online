@@ -1581,3 +1581,310 @@ This backend architecture provides:
 - ✅ Rate limiting
 - ✅ Scalable structure
 - ✅ Production-ready
+
+---
+
+# Backend Agent Guide
+
+
+## Responsibilities
+
+The Backend Agent handles all server-side code, database operations, API routes, and business logic.
+
+## Tech Stack
+
+- **Framework**: Next.js Server Actions & API Routes
+- **ORM**: Prisma 7.2.0
+- **Database**: PostgreSQL (via PrismaPg adapter)
+- **Authentication**: NextAuth.js v5 (Auth.js)
+- **Validation**: Zod schemas
+
+## Key Areas
+
+### 1. Server Actions (`/src/actions`)
+
+Server Actions are the primary way to handle server-side operations.
+
+#### Current Actions
+
+- **`car-actions.ts`** - Car CRUD operations, filtering, search
+- **`favorite-actions.ts`** - Favorite management
+- **`user-actions.ts`** - User profile operations
+
+#### Pattern
+
+```typescript
+'use server'
+
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
+
+const schema = z.object({
+  name: z.string().min(1),
+})
+
+export async function myAction(data: unknown) {
+  // 1. Validate input
+  const validated = schema.parse(data)
+
+  // 2. Check auth if needed
+  const session = await auth()
+  if (!session) throw new Error('Unauthorized')
+
+  // 3. Database operation
+  const result = await prisma.model.create({
+    data: validated,
+  })
+
+  // 4. Return result
+  return result
+}
+```
+
+### 2. Database Schema (`/prisma/schema.prisma`)
+
+Current models:
+- **User** - User accounts and authentication
+- **Account** - OAuth accounts
+- **Session** - User sessions
+- **Car** - Car listings with all details
+- **CarImage** - Car images
+- **Favorite** - User favorites
+- **Inspection** - Car inspection records
+- **Order** - Purchase orders
+- **Inquiry** - Contact inquiries
+
+### 3. Authentication (`/src/lib/auth.ts`)
+
+Using NextAuth v5 (Auth.js) with:
+- Credentials provider (email/password)
+- Google OAuth
+- JWT strategy
+- Prisma adapter
+
+### 4. API Routes (`/src/app/api`)
+
+Use API routes for webhooks, external integrations, or non-standard operations.
+
+```typescript
+// app/api/webhook/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+
+  // Process webhook
+
+  return NextResponse.json({ success: true })
+}
+```
+
+## Common Tasks
+
+### Adding a New Server Action
+
+```typescript
+// /src/actions/my-actions.ts
+'use server'
+
+import { prisma } from '@/lib/prisma'
+import { auth } from '@/lib/auth'
+import { revalidatePath } from 'next/cache'
+
+export async function createItem(formData: FormData) {
+  // Auth check
+  const session = await auth()
+  if (!session?.user) {
+    throw new Error('Unauthorized')
+  }
+
+  // Extract and validate data
+  const name = formData.get('name') as string
+
+  // Database operation
+  const item = await prisma.item.create({
+    data: {
+      name,
+      userId: session.user.id,
+    },
+  })
+
+  // Revalidate cache
+  revalidatePath('/items')
+
+  return item
+}
+```
+
+### Database Query Patterns
+
+```typescript
+// Simple query
+const cars = await prisma.car.findMany({
+  where: { status: 'AVAILABLE' },
+  include: {
+    images: { where: { isPrimary: true } },
+    _count: { select: { favorites: true } },
+  },
+  orderBy: { createdAt: 'desc' },
+})
+
+// Complex filtering
+const filtered = await prisma.car.findMany({
+  where: {
+    AND: [
+      { status: 'AVAILABLE' },
+      filters.make ? { make: filters.make } : {},
+      filters.minPrice ? { price: { gte: filters.minPrice } } : {},
+      filters.search ? {
+        OR: [
+          { make: { contains: filters.search, mode: 'insensitive' } },
+          { model: { contains: filters.search, mode: 'insensitive' } },
+        ]
+      } : {},
+    ],
+  },
+})
+```
+
+### Updating Database Schema
+
+```bash
+# 1. Edit prisma/schema.prisma
+# 2. Create migration
+npm run db:migrate
+
+# Or push directly (dev only)
+npm run db:push
+
+# Generate Prisma Client
+npm run db:generate
+```
+
+## Error Handling
+
+```typescript
+'use server'
+
+import { z } from 'zod'
+
+export async function myAction(data: unknown) {
+  try {
+    // Validate
+    const schema = z.object({ name: z.string() })
+    const validated = schema.parse(data)
+
+    // Process
+    const result = await prisma.item.create({ data: validated })
+
+    return { success: true, data: result }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: 'Validation failed', details: error.errors }
+    }
+    return { success: false, error: 'Internal error' }
+  }
+}
+```
+
+## Authentication Helpers
+
+```typescript
+import { auth } from '@/lib/auth'
+
+// Get current user
+const session = await auth()
+const user = session?.user
+
+// Require auth
+const session = await auth()
+if (!session?.user) {
+  throw new Error('Unauthorized')
+}
+
+// Check specific role (if implemented)
+if (session.user.role !== 'ADMIN') {
+  throw new Error('Forbidden')
+}
+```
+
+## Database Seeding
+
+```bash
+npm run db:seed
+```
+
+See `/prisma/seed.ts` for seed data.
+
+## Performance Tips
+
+1. **Use `include` selectively** - Only fetch needed relations
+2. **Index frequently queried fields** - Add `@@index` in schema
+3. **Batch operations** - Use `createMany`, `updateMany`
+4. **Cache when possible** - Use Next.js cache helpers
+5. **Pagination** - Use `skip` and `take` for large datasets
+
+## Testing
+
+Write E2E tests that verify server actions work correctly:
+
+```typescript
+test('should create item via form submission', async ({ page }) => {
+  await page.goto('/items/new')
+  await page.fill('input[name="name"]', 'Test Item')
+  await page.click('button[type="submit"]')
+
+  await expect(page.getByText('Test Item')).toBeVisible()
+})
+```
+
+## File Structure
+
+```
+src/
+├── actions/
+│   ├── car-actions.ts
+│   ├── favorite-actions.ts
+│   └── user-actions.ts
+├── app/
+│   └── api/
+│       └── webhook/
+│           └── route.ts
+├── lib/
+│   ├── auth.ts
+│   ├── prisma.ts
+│   └── utils.ts
+└── types/
+    └── index.ts
+
+prisma/
+├── schema.prisma
+└── seed.ts
+```
+
+## Common Patterns
+
+### Optimistic Updates
+
+```typescript
+// Client component
+const optimisticUpdate = () => {
+  startTransition(async () => {
+    // Optimistic UI update
+    setLocalState(newValue)
+
+    // Server action
+    await serverAction(newValue)
+  })
+}
+```
+
+### Revalidation
+
+```typescript
+import { revalidatePath, revalidateTag } from 'next/cache'
+
+// After mutation
+revalidatePath('/cars') // Revalidate specific path
+revalidateTag('cars') // Revalidate by tag
+```

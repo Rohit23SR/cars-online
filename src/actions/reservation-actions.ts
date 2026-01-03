@@ -16,6 +16,7 @@ export interface CreateReservationInput {
   state: string
   postcode: string
   deliveryDate: string
+  paymentMethod?: string
   // Mock payment info
   cardLast4?: string
 }

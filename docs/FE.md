@@ -1293,3 +1293,210 @@ This frontend architecture provides:
 - ✅ Accessible and responsive
 - ✅ Scalable folder structure
 - ✅ Best-in-class DX (Developer Experience)
+
+---
+
+# Frontend Agent Guide
+
+
+## Responsibilities
+
+The Frontend Agent handles all React/Next.js client-side code, UI components, and user interactions.
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **UI Library**: React 19
+- **Styling**: Tailwind CSS 4
+- **Component Library**: Radix UI
+- **State Management**: Zustand, React Hooks
+- **Form Handling**: React Hook Form + Zod
+- **Animations**: Framer Motion
+
+## Key Areas
+
+### 1. Components (`/src/components`)
+
+#### UI Components (`/src/components/ui`)
+- Shadcn components (Button, Input, Select, etc.)
+- Base components used throughout the app
+- Maintained via `npx shadcn add <component>`
+
+#### Feature Components
+- `CarCard.tsx` - Car listing card with image, details, favorite button
+- `CarFilters.tsx` - Advanced filter sidebar with accordions
+- `FavoriteButton.tsx` - Toggle favorite functionality
+- `Header.tsx` - Navigation header with auth menu
+- `Footer.tsx` - Site footer
+
+### 2. Pages (`/src/app`)
+
+- `/page.tsx` - Homepage with hero, features, featured cars
+- `/cars/page.tsx` - Browse cars with filters
+- `/cars/[slug]/page.tsx` - Individual car detail page
+- `/sell/page.tsx` - Sell car form
+- `/dashboard/*` - User dashboard pages
+
+### 3. Client Components
+
+Components marked with `'use client'`:
+- Interactive forms
+- State management
+- Event handlers
+- Browser APIs
+- Zustand stores
+
+## Common Tasks
+
+### Adding a New Component
+
+```typescript
+// 1. Create component file
+// /src/components/feature/MyComponent.tsx
+
+'use client' // If needs interactivity
+
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+
+export function MyComponent() {
+  const [state, setState] = useState('')
+
+  return (
+    <div className="rounded-2xl bg-white p-6" style={{ boxShadow: 'var(--card-shadow)' }}>
+      {/* Component content */}
+    </div>
+  )
+}
+```
+
+### Form Handling Pattern
+
+```typescript
+'use client'
+
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+
+const schema = z.object({
+  name: z.string().min(1, 'Required'),
+})
+
+export function MyForm() {
+  const form = useForm({
+    resolver: zodResolver(schema),
+  })
+
+  const onSubmit = async (data) => {
+    // Call server action
+  }
+
+  return <form onSubmit={form.handleSubmit(onSubmit)}>...</form>
+}
+```
+
+## Styling Guidelines
+
+### Use Design System
+
+```tsx
+// Good - Uses design tokens
+<div className="rounded-2xl bg-white" style={{ boxShadow: 'var(--card-shadow)' }}>
+
+// Bad - Hard-coded values
+<div className="rounded-lg bg-white shadow-md">
+```
+
+### Modern Card Pattern
+
+```tsx
+<div className="car-card group relative h-full rounded-2xl bg-white transition-all duration-500 hover:-translate-y-1">
+  {/* Card content */}
+</div>
+```
+
+### Gradient Patterns
+
+```tsx
+// Gradient text
+<h2 className="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+
+// Gradient background
+<div className="bg-gradient-to-br from-green-600 to-green-800">
+```
+
+## Testing with Playwright
+
+After making changes, run tests:
+
+```bash
+npm run test:e2e
+```
+
+### Writing Tests for New Components
+
+```typescript
+// tests/e2e/my-feature.spec.ts
+import { test, expect } from '@playwright/test'
+
+test('should render my component', async ({ page }) => {
+  await page.goto('/my-page')
+  await expect(page.getByRole('heading', { name: /My Component/i })).toBeVisible()
+})
+```
+
+## Performance Tips
+
+1. **Use Server Components by default** - Only add `'use client'` when necessary
+2. **Lazy load heavy components** - Use `next/dynamic`
+3. **Optimize images** - Use `next/image` with proper sizes
+4. **Minimize client JS** - Keep client bundles small
+
+## Common Patterns
+
+### Loading States
+
+```tsx
+{isLoading ? (
+  <CarCardSkeleton />
+) : (
+  <CarCard car={car} />
+)}
+```
+
+### Error Handling
+
+```tsx
+import { toast } from 'sonner'
+
+toast.error('Error Title', {
+  description: 'Detailed error message',
+  duration: 4000,
+})
+```
+
+### Responsive Design
+
+```tsx
+// Mobile-first approach
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+```
+
+## File Structure
+
+```
+src/
+├── components/
+│   ├── ui/              # Base UI components
+│   ├── layout/          # Header, Footer
+│   ├── car/            # Car-specific components
+│   └── dashboard/      # Dashboard components
+├── app/
+│   ├── page.tsx        # Homepage
+│   ├── cars/           # Car pages
+│   ├── sell/           # Sell page
+│   └── dashboard/      # Dashboard pages
+└── lib/
+    └── utils.ts        # Utility functions
+```
