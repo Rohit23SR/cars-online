@@ -22,7 +22,11 @@ export async function getFeaturedCars(limit = 8): Promise<CarCardType[]> {
     take: limit
   })
 
-  return cars as CarCardType[]
+  return cars.map(car => ({
+    ...car,
+    price: Number(car.price),
+    _count: car._count
+  }))
 }
 
 export async function getAllCars() {
@@ -136,5 +140,9 @@ export async function getFilteredCars(filters: CarFilters = {}) {
     orderBy: { createdAt: 'desc' }
   })
 
-  return cars as CarCardType[]
+  return cars.map(car => ({
+    ...car,
+    price: Number(car.price),
+    _count: car._count
+  }))
 }
