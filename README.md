@@ -1,4 +1,4 @@
-# Cars Online - Premium Used Car Marketplace
+# Cars Online
 
 A modern, full-stack car marketplace built with Next.js 16, featuring quality inspected used cars with a 7-day guarantee.
 

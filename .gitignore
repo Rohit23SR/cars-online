@@ -63,3 +63,4 @@ error.jpg
 filter.jpg
 
 .vercel
+.env*.local
