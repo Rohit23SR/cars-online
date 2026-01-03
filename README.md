@@ -4,7 +4,7 @@ A modern, full-stack car marketplace built with Next.js 16, featuring quality in
 
 ## 🌐 Live Demo
 
-**Production URL:** [https://cars-online-swati-singhs-projects-3011d900.vercel.app](https://cars-online-swati-singhs-projects-3011d900.vercel.app)
+**Production URL:** [https://https://cars-online.vercel.app/](https://https://cars-online.vercel.app/)
 
 ## Testing
 
