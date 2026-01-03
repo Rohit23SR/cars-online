@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+/test-results
+/playwright-report
+/playwright/.cache
 
 # next.js
 /.next/
@@ -39,3 +42,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+
+# documentation (not committed)
+/docs
+
+# temporary/generated md files
+E2E_TEST_SUMMARY.md
+TYPOGRAPHY_IMPROVEMENTS.md
+PROGRESS.md
+COMMIT_SUMMARY.md
+
+# claude/ai related
+.claude/
+
+# temporary files
+nul
+error.jpg
+filter.jpg

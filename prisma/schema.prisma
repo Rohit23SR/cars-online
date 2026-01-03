@@ -1,0 +1,259 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String        @id @default(cuid())
+  email          String        @unique
+  emailVerified  DateTime?
+  name           String?
+  phone          String?
+  image          String?
+  hashedPassword String?
+  role           UserRole      @default(USER)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  address        String?
+  city           String?
+  postcode       String?
+  state          String?
+  accounts       Account[]
+  favorites      Favorite[]
+  inquiries      Inquiry[]
+  reservations   Reservation[]
+  sessions       Session[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Car {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  make            String
+  model           String
+  year            Int
+  variant         String?
+  vin             String?       @unique
+  price           Decimal       @db.Decimal(10, 2)
+  status          CarStatus     @default(AVAILABLE)
+  featured        Boolean       @default(false)
+  bodyType        String
+  transmission    String
+  fuelType        String
+  engineSize      String?
+  mileage         Int
+  color           String
+  doors           Int?
+  seats           Int?
+  power           String?
+  torque          String?
+  fuelEconomy     String?
+  location        String
+  registration    String?
+  description     String?
+  features        Json?
+  inspectionDate  DateTime?
+  inspectionNotes String?
+  viewCount       Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  images          CarImage[]
+  favorites       Favorite[]
+  reservations    Reservation[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([make])
+  @@index([price])
+  @@index([year])
+  @@index([bodyType])
+  @@index([createdAt])
+  @@index([featured])
+  @@index([status, make, price])
+  @@map("cars")
+}
+
+model CarImage {
+  id        String   @id @default(cuid())
+  carId     String
+  url       String
+  altText   String?
+  isPrimary Boolean  @default(false)
+  order     Int      @default(0)
+  width     Int?
+  height    Int?
+  size      Int?
+  createdAt DateTime @default(now())
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId])
+  @@index([isPrimary])
+  @@index([order])
+  @@map("car_images")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  carId     String
+  createdAt DateTime @default(now())
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, carId])
+  @@index([userId])
+  @@index([carId])
+  @@map("favorites")
+}
+
+model Reservation {
+  id                      String            @id @default(cuid())
+  orderNumber             String            @unique
+  userId                  String
+  carId                   String
+  customerName            String
+  customerEmail           String
+  customerPhone           String
+  streetAddress           String
+  suburb                  String
+  state                   String
+  postcode                String
+  paymentMethod           PaymentMethod
+  carPrice                Decimal           @db.Decimal(10, 2)
+  deposit                 Decimal?          @db.Decimal(10, 2)
+  loanTerm                Int?
+  tradeInValue            Decimal?          @db.Decimal(10, 2)
+  totalAmount             Decimal           @db.Decimal(10, 2)
+  tradeInMake             String?
+  tradeInModel            String?
+  tradeInYear             Int?
+  tradeInMileage          Int?
+  tradeInCondition        String?
+  preferredInspectionDate DateTime?
+  cardLast4               String?
+  status                  ReservationStatus @default(PENDING)
+  adminNotes              String?
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+  car                     Car               @relation(fields: [carId], references: [id])
+  user                    User              @relation(fields: [userId], references: [id])
+
+  @@index([orderNumber])
+  @@index([userId])
+  @@index([carId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("reservations")
+}
+
+model Inquiry {
+  id             String        @id @default(cuid())
+  type           InquiryType
+  userId         String?
+  name           String
+  email          String
+  phone          String?
+  carId          String?
+  sellCarMake    String?
+  sellCarModel   String?
+  sellCarYear    Int?
+  sellCarMileage Int?
+  estimatedValue Decimal?      @db.Decimal(10, 2)
+  message        String?
+  status         InquiryStatus @default(NEW)
+  adminNotes     String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  user           User?         @relation(fields: [userId], references: [id])
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+  @@map("inquiries")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum CarStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  DRAFT
+}
+
+enum PaymentMethod {
+  FULL_PAYMENT
+  FINANCE
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  INSPECTION_SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum InquiryType {
+  GENERAL
+  TEST_DRIVE
+  SELL_CAR
+  FINANCE
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  RESOLVED
+  CLOSED
+}

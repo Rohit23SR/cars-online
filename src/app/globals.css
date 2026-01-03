@@ -1,26 +1,345 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa;
+  --foreground: #0a0a0a;
+
+  /* Modern Color Palette */
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --accent: #8b5cf6;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+
+  /* Neutral Shades */
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #e5e5e5;
+  --gray-300: #d4d4d4;
+  --gray-400: #a3a3a3;
+  --gray-500: #737373;
+  --gray-600: #525252;
+  --gray-700: #404040;
+  --gray-800: #262626;
+  --gray-900: #171717;
+
+  /* UI Component Colors */
+  --muted: #f5f5f5;              /* gray-100 - Light gray background for muted elements */
+  --muted-foreground: #737373;   /* gray-500 - Medium gray text for placeholders */
+  --card: #ffffff;               /* White card background */
+  --card-foreground: #0a0a0a;    /* Same as --foreground - Dark text on cards */
+  --popover: #ffffff;            /* White popover background */
+  --popover-foreground: #0a0a0a; /* Same as --foreground - Dark text on popovers */
+  --border: #e5e5e5;             /* gray-200 - Light gray borders */
+  --input: #e5e5e5;              /* gray-200 - Light gray input borders */
+  --ring: #2563eb;               /* Same as --primary - Blue focus ring */
+  --destructive: #ef4444;        /* Same as --error - Red for destructive actions */
+  --destructive-foreground: #ffffff; /* White text on red */
+  --radius: 0.5rem;              /* Border radius for inputs */
+
+  /* Button Colors */
+  --primary-foreground: #ffffff;     /* White text on primary buttons */
+  --secondary: #f5f5f5;              /* gray-100 - Secondary button background */
+  --secondary-foreground: #0a0a0a;   /* Dark text on secondary buttons */
+  --accent-foreground: #0a0a0a;      /* Dark text on accent elements */
+
+  /* Additional UI Colors */
+  --ring-offset-background: #ffffff; /* White background for ring offset */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.06), 0 8px 10px -6px rgb(0 0 0 / 0.06);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+
+  /* Modern card shadow */
+  --card-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.05), 0 12px 24px rgba(0, 0, 0, 0.05);
+  --card-shadow-hover: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 8px 16px rgba(0, 0, 0, 0.08), 0 24px 48px rgba(0, 0, 0, 0.08);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Direct color definitions for Tailwind v4 */
+  --color-background: #fafafa;
+  --color-foreground: #0a0a0a;
+  --color-primary: #2563eb;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f5f5f5;
+  --color-secondary-foreground: #0a0a0a;
+  --color-accent: #8b5cf6;
+  --color-accent-foreground: #0a0a0a;
+  --color-muted: #f5f5f5;
+  --color-muted-foreground: #737373;
+  --color-card: #ffffff;
+  --color-card-foreground: #0a0a0a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0a0a0a;
+  --color-border: #e5e5e5;
+  --color-input: #e5e5e5;
+  --color-ring: #2563eb;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+
+  /* Gray palette - needed for text-gray-*, bg-gray-*, etc. */
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d4d4d4;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #737373;
+  --color-gray-600: #525252;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-900: #171717;
+
+  /* Blue palette - needed for blue classes used in the app */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+
+  /* Red palette - for error states */
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+
+  /* Green palette - for success states */
+  --color-green-100: #dcfce7;
+  --color-green-600: #16a34a;
+
+  /* White and black */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Font family */
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #fafafa;
+
+    /* Dark mode UI Component Colors */
+    --muted: #262626;               /* gray-800 - Dark gray background */
+    --muted-foreground: #a3a3a3;    /* gray-400 - Light gray text */
+    --card: #171717;                /* gray-900 - Very dark card background */
+    --card-foreground: #fafafa;     /* Same as dark --foreground - White text on cards */
+    --popover: #171717;             /* gray-900 - Very dark popover */
+    --popover-foreground: #fafafa;  /* Same as dark --foreground - White text */
+    --border: #404040;              /* gray-700 - Dark gray borders */
+    --input: #404040;               /* gray-700 - Dark gray input borders */
+
+    /* Dark mode Button Colors */
+    --primary-foreground: #ffffff;     /* White text on primary buttons */
+    --secondary: #262626;              /* gray-800 - Secondary button background */
+    --secondary-foreground: #fafafa;   /* Light text on secondary buttons */
+    --accent-foreground: #fafafa;      /* Light text on accent elements */
+
+    /* Dark mode Additional UI Colors */
+    --ring-offset-background: #0a0a0a; /* Dark background for ring offset */
   }
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  letter-spacing: -0.011em;
+}
+
+/* Modern Typography - Mobile First */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+/* Mobile-first heading sizes (default for small screens) */
+h1 {
+  font-size: 1.875rem; /* 30px - mobile */
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: 1.5rem; /* 24px - mobile */
+}
+
+h3 {
+  font-size: 1.25rem; /* 20px - mobile */
+}
+
+h4 {
+  font-size: 1.125rem; /* 18px - mobile */
+}
+
+h5 {
+  font-size: 1rem; /* 16px - mobile */
+}
+
+h6 {
+  font-size: 0.875rem; /* 14px - mobile */
+}
+
+/* Tablet and larger screens */
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2.5rem; /* 40px - tablet */
+  }
+
+  h2 {
+    font-size: 2rem; /* 32px - tablet */
+  }
+
+  h3 {
+    font-size: 1.5rem; /* 24px - tablet */
+  }
+
+  h4 {
+    font-size: 1.25rem; /* 20px - tablet */
+  }
+}
+
+/* Desktop and larger screens */
+@media (min-width: 1024px) {
+  h1 {
+    font-size: 3rem; /* 48px - desktop */
+  }
+
+  h2 {
+    font-size: 2.25rem; /* 36px - desktop */
+  }
+
+  h3 {
+    font-size: 1.875rem; /* 30px - desktop */
+  }
+}
+
+/* Base body text size - mobile first */
+body {
+  font-size: 0.875rem; /* 14px - mobile */
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 1rem; /* 16px - tablet and above */
+  }
+}
+
+p {
+  font-size: inherit;
+  line-height: 1.6;
+}
+
+/* Form inputs - MUST be 16px minimum to prevent iOS auto-zoom */
+input,
+textarea,
+select {
+  font-size: 1rem; /* 16px - all screen sizes */
+  line-height: 1.5;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Cursor pointer on all buttons */
+button {
+  cursor: pointer;
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(37, 99, 235, 0.2);
+  color: inherit;
+}
+
+/* Focus Visible */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Car Card Hover Effect */
+.car-card {
+  box-shadow: var(--card-shadow);
+}
+
+.car-card:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Modern Toast Notifications */
+[data-sonner-toast] {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.03) !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
+  border-color: #f87171 !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-title] {
+  color: #7f1d1d !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-description] {
+  color: #991b1b !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
+  border-color: #34d399 !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-title] {
+  color: #14532d !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-description] {
+  color: #166534 !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: -0.011em;
+  color: #171717 !important;
+}
+
+[data-sonner-toast] [data-description] {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  line-height: 1.5;
+  color: #404040 !important;
+}
+
+[data-sonner-toast] [data-close-button] {
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  transform: scale(1.1);
 }
